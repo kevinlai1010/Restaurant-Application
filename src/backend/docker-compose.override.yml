@@ -1,0 +1,52 @@
+version: '3'
+
+services:
+  nginx:
+    environment: 
+      - IDENTITY_URL=http://identity-api
+      - BASKET_URL=http://basket-api:5200
+      - ORDER_URL=http://order-api:8090
+      - MENU_URL=http://menu-api
+      - DASHBOARD_URL=http://dashboard-app
+  
+  order-api:
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://pgsql:5432/orderdb
+      - SPRING_DATASOURCE_USERNAME=admin
+      - SPRING_DATASOURCE_PASSWORD=Passw0rd!
+      - IDENTITY_URL_PUB=http://localhost:8080/identity
+      - IDENTITY_URL=http://identity-api
+      - BASKET_URL==http://basket-api:5200
+
+  basket-api:
+    environment:
+      - REDIS_HOST=redis
+      - IDENTITY_URL=http://identity-api
+      - IDENTITY_URL_PUB=http://localhost:8080/identity
+      - BASE_PATH=/basket
+  
+  pgsql:
+    environment:
+      - POSTGRES_PASSWORD=Passw0rd!
+      - POSTGRES_USER=admin
+      - PGDATA=/pg
+      - POSTGRES_DB=orderdb
+
+  menu-api:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__MenuDatabaseConnectionString=Host=pgsql;Database=menu_database;Username=admin;Password=Passw0rd!
+      - PATH_BASE=/menu
+      - IDENTITY_URL_PUB=http://localhost:8080/identity
+      - IDENTITY_URL=http://identity-api
+  
+  identity-api:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__IdentityConnectionString=Host=pgsql;Database=identity_database;Username=admin;Password=Passw0rd!
+      - PATH_BASE=/identity
+      - MENU_API_URL=http://localhost:8080/menu
+      - ORDER_API_URL=http://localhost:8080/order
+      - BASKET_API_URL=http://localhost:8080/basket
+      - DASHBOARD_APP_URL=http://localhost:8080/dashboard
+      - IDENTITY_URL_PUB=http://localhost:8080/identity
